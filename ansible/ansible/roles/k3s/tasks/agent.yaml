@@ -1,0 +1,59 @@
+- name: Create directory /root/k3s-agent
+  become: true
+  file:
+    path: /root/k3s-agent
+    state: directory
+    mode: '0755'
+
+- name: Copy k3s binary
+  become: true
+  copy:
+    src: files/k3s
+    dest: /usr/local/bin/k3s
+    mode: '0755'
+
+- name: Copy agent ENV file
+  become: true
+  copy:
+    src: files/k3s-agent.env
+    dest: /root/k3s-agent/k3s-agent.env
+    mode: '0600'
+
+- name: Start k3s-agent manually
+  become: true
+  shell: |
+    nohup env $(cat /root/k3s-agent/k3s-agent.env | xargs) /usr/local/bin/k3s agent >> /var/log/k3s-agent.log 2>&1 &
+  args:
+    executable: /bin/bash
+
+- name: Verify k3s-agent is running (via pgrep)
+  become: true
+  shell: pgrep -f '/usr/local/bin/k3s agent'
+  register: k3s_agent_status
+  changed_when: false
+  failed_when: k3s_agent_status.rc != 0
+
+- name: Output log and fail the playbook on error
+  become: true
+  shell: tail -40 /var/log/k3s-agent.log
+  when: k3s_agent_status.rc != 0
+  register: agent_log
+  failed_when: true
+
+- debug:
+    var: agent_log.stdout
+  when: k3s_agent_status.rc != 0 and agent_log is defined
+
+- name: Wait for ctr to appear by full path
+  become: true
+  shell: |
+    for i in {1..90}; do
+      [ -x /var/lib/rancher/k3s/data/current/bin/ctr ] && exit 0
+      sleep 1
+    done
+    exit 1
+  args:
+    executable: /bin/bash
+  register: wait_ctr
+  failed_when: wait_ctr.rc != 0
+  changed_when: false

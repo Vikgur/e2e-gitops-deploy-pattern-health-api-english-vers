@@ -1,0 +1,161 @@
+# Baseline for Python, Dockerfile, and K8s YAML.
+
+rules:
+  # --- Python: dangerous calls ---
+  - id: python-eval-exec
+    message: Avoid eval()/exec(); use safer alternatives.
+    severity: ERROR
+    languages: [python]
+    pattern-either:
+      - pattern: eval($X)
+      - pattern: exec($X)
+
+  - id: python-subprocess-shell-true
+    message: subprocess with shell=True is vulnerable to injections. Use argument lists and shell=False.
+    severity: ERROR
+    languages: [python]
+    pattern-either:
+      - pattern: subprocess.Popen(..., shell=True, ...)
+      - pattern: subprocess.run(..., shell=True, ...)
+      - pattern: subprocess.call(..., shell=True, ...)
+      - pattern: os.system($CMD)
+
+  - id: python-pyyaml-unsafe-load
+    message: yaml.load without SafeLoader is unsafe. Use yaml.safe_load / SafeLoader.
+    severity: ERROR
+    languages: [python]
+    patterns:
+      - pattern: yaml.load($X)
+      - pattern-not: yaml.load($X, Loader=yaml.SafeLoader)
+      - pattern-not: yaml.safe_load($X)
+
+  - id: python-requests-verify-false
+    message: TLS verification disabled (verify=False) in requests.
+    severity: WARNING
+    languages: [python]
+    pattern-either:
+      - pattern: requests.get(..., verify=False, ...)
+      - pattern: requests.post(..., verify=False, ...)
+      - pattern: requests.put(..., verify=False, ...)
+      - pattern: requests.delete(..., verify=False, ...)
+      - pattern: requests.patch(..., verify=False, ...)
+      - pattern: requests.head(..., verify=False, ...)
+
+  # --- Generic: hardcoded secrets ---
+  - id: generic-hardcoded-secret
+    message: Possible hardcoded secret/password/token.
+    severity: WARNING
+    languages: [generic]
+    pattern-regex: (?i)\b(pass(word)?|secret|token|api[_-]?key|access[_-]?key)\b\s*[:=]\s*['"][^'"]{8,}['"]
+
+  # --- Dockerfile ---
+  - id: docker-latest-tag
+    message: Image tag is not pinned (latest). Use immutable tag/digest.
+    severity: WARNING
+    languages: [dockerfile]
+    pattern: |
+      FROM $IMAGE:latest
+
+  - id: docker-user-root
+    message: Container runs as root. Set USER with a non-privileged UID.
+    severity: WARNING
+    languages: [dockerfile]
+    pattern: |
+      USER root
+
+  # --- Kubernetes YAML ---
+  - id: k8s-privileged-true
+    message: securityContext.privileged: true
+    severity: ERROR
+    languages: [yaml]
+    patterns:
+      - pattern: |
+          spec:
+            ...
+            containers:
+              ...
+              - ...
+                securityContext:
+                  privileged: true
+
+  - id: k8s-run-as-root
+    message: Running as root allowed. Specify runAsNonRoot: true and a UID.
+    severity: ERROR
+    languages: [yaml]
+    patterns:
+      - pattern: |
+          spec:
+            ...
+            containers:
+              ...
+              - ...
+                securityContext:
+                  runAsNonRoot: false
+      - pattern: |
+          spec:
+            ...
+            containers:
+              ...
+              - ...
+                securityContext:
+                  runAsUser: 0
+
+  - id: k8s-missing-requests-limits
+    message: resources.requests/limits not specified.
+    severity: WARNING
+    languages: [yaml]
+    pattern-either:
+      - pattern: |
+          spec:
+            ...
+            containers:
+              ...
+              - ...
+                resources:
+                  limits: {}
+      - pattern: |
+          spec:
+            ...
+            containers:
+              ...
+              - ...
+                resources:
+                  requests: {}
+      - pattern: |
+          spec:
+            ...
+            containers:
+              ...
+              - ...
+                resources: null
+      - pattern: |
+          spec:
+            ...
+            containers:
+              ...
+              - ...
+        metavariable-pattern:
+          metavariable: $X
+          pattern-not: |
+            resources:
+              requests:
+                cpu: $CPU
+                memory: $MEM
+              limits:
+                cpu: $LCPU
+                memory: $LMEM
+
+  - id: k8s-host-namespaces
+    message: hostPID/hostIPC/hostNetwork enabled — avoid them.
+    severity: WARNING
+    languages: [yaml]
+    pattern-either:
+      - pattern: |
+          spec:
+            hostPID: true
+      - pattern: |
+          spec:
+            hostIPC: true
+      - pattern: |
+          spec:
+            hostNetwork: true

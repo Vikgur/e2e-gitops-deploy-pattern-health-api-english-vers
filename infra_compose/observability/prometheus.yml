@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 15s
+
+remote_write:
+  - url: "http://victoria-metrics:8428/api/v1/write"
+
+scrape_configs:
+  - job_name: "health-api"
+    static_configs:
+      - targets: ["health-api-1:8080", "health-api-2:8080"]
+
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "pgbouncer"
+    static_configs:
+      - targets: ["pgbouncer-exporter:9127"]
+
+  - job_name: "postgres"
+    honor_labels: true
+    static_configs:
+      - targets: ["postgres-exporter:9187"]
+
+  - job_name: "kafka"
+    honor_labels: true
+    static_configs:
+      - targets: ["kafka-exporter:9308"]

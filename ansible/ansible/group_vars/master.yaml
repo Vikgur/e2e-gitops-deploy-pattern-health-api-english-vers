@@ -1,0 +1,19 @@
+environment:
+  KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+kubeconfig_path: /etc/rancher/k3s/k3s.yaml
+argocd_namespace: argocd
+
+argocd_sso_mode: oidc  # or dex or login
+github_oauth_client_id: YOUR_ID
+github_oauth_client_secret: YOUR_SECRET  # if using Dex
+
+admin_password_bcrypt: $2y$10$XXXXXXXXXXXXXXXXX # if using Login
+
+# TLS
+cluster_issuer: letsencrypt-prod
+argocd_tls_secret_name: argocd-tls
+
+# Domain and host
+domain_base: health.gurko.ru
+argocd_host: argocd.health.gurko.ru

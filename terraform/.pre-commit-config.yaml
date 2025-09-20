@@ -1,0 +1,30 @@
+repos:
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.92.0
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+
+  - repo: https://github.com/terraform-linters/tflint
+    rev: v0.53.0
+    hooks:
+      - id: tflint
+        args: ["--recursive"]
+
+  - repo: https://github.com/bridgecrewio/checkov
+    rev: 3.2.325
+    hooks:
+      - id: checkov
+        args: ["-d", "terraform", "--quiet"]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2
+    hooks:
+      - id: gitleaks
+        args: ["detect", "--no-banner"]
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: ["-c", ".yamllint.yaml"]

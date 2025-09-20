@@ -1,0 +1,50 @@
+- name: Copy pause.tar from master to worker
+  copy:
+    src: /home/ubuntu/health-api/ansible/roles/k3s/files/pause.tar
+    dest: /tmp/pause.tar
+    remote_src: yes
+  delegate_to: k3s-master
+  run_once: true
+
+- name: Distribute pause.tar to worker
+  copy:
+    src: /tmp/pause.tar
+    dest: /tmp/pause.tar
+
+- name: Import pause on agent
+  become: true
+  shell: /usr/local/bin/k3s ctr image import /tmp/pause.tar
+
+- name: Copy postgres.tar from master to worker
+  copy:
+    src: /home/ubuntu/health-api/ansible/roles/k3s/files/postgres.tar
+    dest: /tmp/postgres.tar
+    remote_src: yes
+  delegate_to: k3s-master
+  run_once: true
+
+- name: Distribute postgres.tar to worker
+  copy:
+    src: /tmp/postgres.tar
+    dest: /tmp/postgres.tar
+
+- name: Import postgres on agent
+  become: true
+  shell: /usr/local/bin/k3s ctr image import /tmp/postgres.tar
+
+- name: Copy jaeger.tar from master to worker
+  copy:
+    src: /home/ubuntu/health-api/ansible/roles/k3s/files/jaeger.tar
+    dest: /tmp/jaeger.tar
+    remote_src: yes
+  delegate_to: k3s-master
+  run_once: true
+
+- name: Distribute jaeger.tar to worker
+  copy:
+    src: /tmp/jaeger.tar
+    dest: /tmp/jaeger.tar
+
+- name: Import jaeger on agent
+  become: true
+  shell: /usr/local/bin/k3s ctr image import /tmp/jaeger.tar

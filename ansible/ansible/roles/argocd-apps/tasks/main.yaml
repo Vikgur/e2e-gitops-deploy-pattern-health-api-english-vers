@@ -1,0 +1,26 @@
+- name: Check if gitops-apps-health-api directory exists
+  ansible.builtin.stat:
+    path: "/opt/gitops-apps-health-api"
+  register: apps_repo_stat
+
+- name: Fail if gitops-apps-health-api repo not found
+  ansible.builtin.fail:
+    msg: "Repository gitops-apps-health-api not found at: /opt/gitops-apps-health-api"
+  when: not apps_repo_stat.stat.exists
+
+- name: Install kustomize via snap (if not installed)
+  ansible.builtin.shell: |
+    if ! command -v kustomize &> /dev/null; then
+      sudo snap install kustomize
+    fi
+  tags: [packages]  
+
+- name: Apply Argo CD Applications ({{ env }})
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig_path }}"
+    definition: "{{ lookup('file', item) | from_yaml }}"
+    namespace: "{{ argocd_namespace }}"
+  with_fileglob:
+    - "/opt/gitops-apps-health-api/apps/{{ env }}/*.yaml"
+  when: env is defined

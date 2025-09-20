@@ -1,0 +1,70 @@
+# Scans: vulnerabilities, secrets, misconfigurations (Terraform/K8s/YAML/Dockerfile)
+
+format: table
+severity:
+  - HIGH
+  - CRITICAL
+ignore-unfixed: true
+exit-code: 1
+timeout: 5m
+
+# Enabled scanners by default
+scanners:
+  - vuln
+  - secret
+  - misconfig
+
+# Vulnerability scanner settings
+vulnerability:
+  type:
+    - os
+    - library
+
+# Secret scanning settings
+secret:
+  # Custom regexes can be added via .trivyignore, default is kept
+  required: true
+
+# Misconfiguration settings for IaC/K8s/Dockerfile
+misconfiguration:
+  include-non-failures: false
+  # Excluded directories (artifacts, external sources, caches)
+  skip-dirs:
+    - .git
+    - .terraform
+    - node_modules
+    - dist
+    - build
+    - artifacts
+    - screenshots
+    - charts/bitnami_charts
+    - helm/values/values-dev
+    - __pycache__
+    - .venv
+  # Example file-level exclusions (extend as needed)
+  skip-files: []
+  # Pin K8s policy versions if desired
+  kubernetes:
+    exclude: []
+  terraform:
+    exclude: []
+
+# Container image scanning settings
+image:
+  severity:
+    - HIGH
+    - CRITICAL
+  ignore-unfixed: true
+
+# Cache settings (improves scan speed)
+cache:
+  dir: .trivycache
+
+# Global path exclusions (extends skip-dirs)
+# Applies to fs/misconfig/secret scanners
+ignorePaths:
+  - .git
+  - .trivycache
+
+# Support for .trivyignore (patterns/IDs to ignore)
+ignore-policy: .trivyignore

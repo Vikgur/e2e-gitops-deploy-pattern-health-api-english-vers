@@ -1,0 +1,27 @@
+services:
+  swagger-ui:
+    image: swaggerapi/swagger-ui:v4.10.3
+    restart: unless-stopped
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./swagger/swagger.json:/usr/share/nginx/html/swagger.json:ro
+      - ./swagger/swagger-config.yaml:/usr/share/nginx/html/swagger-config.yaml:ro
+    environment:
+      - CONFIG_URL=/swagger-config.yaml
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/swagger.json || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      - health-api-1
+      - health-api-2
+    networks:
+      - internal
+
+networks:
+  internal:
+    name: ${SERVICE_NAME}_internal
+    driver: bridge

@@ -1,0 +1,95 @@
+- name: Install base packages
+  hosts: master
+  become: true
+  roles:
+    - common
+
+- name: Install k3s agents
+  hosts: workers
+  become: true
+  tasks:
+    - name: Install k3s agent
+      include_role:
+        name: k3s
+        tasks_from: agent
+
+- name: Check pods on master
+  hosts: master
+  become: true
+  tasks:
+    - name: Check pods
+      include_role:
+        name: k3s
+        tasks_from: check_pods
+
+- name: Create namespace for the application
+  hosts: master
+  become: true
+  tasks:
+    - name: Create namespace health-api
+      include_role:
+        name: k3s
+        tasks_from: master
+
+- name: Install Kubernetes tools (helm, helmfile, plugins)
+  hosts: master
+  become: true
+  roles:
+    - kubernetes-tools
+
+- name: Install Docker (if required for auxiliary tasks)
+  hosts: master
+  become: true
+  roles:
+    - docker
+
+- name: Install ingress-nginx (if not installed)
+  hosts: master
+  become: true
+  roles:
+    - ingress
+  tags: [ingress]
+
+- name: Bootstrap Argo CD
+  hosts: master
+  become: true
+  roles:
+    - argocd
+
+- name: Create imagePullSecret for GHCR (argocd and health-api)
+  hosts: master
+  become: true
+  roles:
+    - ghcr
+
+- name: Check that all nodes are Ready
+  hosts: master
+  become: true
+  tasks:
+    - name: Check nodes
+      include_role:
+        name: k3s
+        tasks_from: check_nodes
+
+- name: Configure Argo CD (config, projects, repos)
+  hosts: master
+  become: true
+  gather_facts: false
+  roles:
+    - argocd-config
+
+- name: Apply Argo CD Applications
+  hosts: master
+  become: true
+  gather_facts: false
+  roles:
+    - argocd-apps
+
+# Optional: patch nginx service to NodePort
+- name: Patch nginx service to NodePort
+  hosts: master
+  become: true
+  gather_facts: false
+  tags: [nginx_fix]
+  roles:
+    - nginx_fix

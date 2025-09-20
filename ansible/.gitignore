@@ -1,0 +1,16 @@
+# virtual environments and cache
+.venv/
+__pycache__/
+*.pyc
+
+# temporary Ansible files
+*.retry
+*.log
+
+# tar images and archives
+*.tar
+*.tgz
+
+# ansible vault password (never store in Git)
+ansible/.vault_pass.txt
+ansible/group_vars/vault/*

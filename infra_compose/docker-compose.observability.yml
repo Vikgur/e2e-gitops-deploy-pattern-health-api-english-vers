@@ -1,0 +1,158 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - victoria-metrics
+      - kafka
+      - alertmanager
+    networks:
+      - internal
+
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics
+    restart: unless-stopped
+    ports:
+      - "8428:8428"
+    volumes:
+      - victoria-metrics-data:/storage
+    command:
+      - "-retentionPeriod=1"
+    depends_on:
+      - kafka
+    networks:
+      - internal
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/login"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - prometheus
+      - jaeger
+    networks:
+      - internal
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./observability/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9093/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.53
+    restart: unless-stopped
+    ports:
+      - "16686:16686" # UI
+      - "4318:4318" # OTLP HTTP
+      - "14268:14268" # collector (HTTP POST /api/traces)
+      - "6831:6831/udp" # thrift через UDP (agent)
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+      - LOG_LEVEL=debug
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:16686"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - kafka
+    networks:
+      - internal
+
+  pgbouncer-exporter:
+    image: prometheuscommunity/pgbouncer-exporter
+    restart: unless-stopped
+    ports:
+      - "9127:9127"
+    environment:
+      DATA_SOURCE_NAME: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pgbouncer:6432/${POSTGRES_DB}?sslmode=disable
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9127/metrics || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      - pgbouncer
+    networks:
+      - internal
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    restart: unless-stopped
+    ports:
+      - "9187:9187"
+    environment:
+      DATA_SOURCE_NAME: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9187/metrics || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    depends_on:
+      - postgres
+    networks:
+      - internal
+
+  kafka-exporter:
+    image: danielqsj/kafka-exporter
+    restart: unless-stopped
+    ports:
+      - "9308:9308"
+    environment:
+      KAFKA_URI: kafka:9092
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9308/metrics || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      - kafka
+    networks:
+      - internal
+
+volumes:
+  grafana-data:
+  prometheus-data:
+  victoria-metrics-data:
+
+networks:
+  internal:
+    name: ${SERVICE_NAME}_internal
+    driver: bridge

@@ -1,0 +1,9 @@
+- name: Create namespace health-api
+  shell: k3s kubectl create namespace health-api || true
+  changed_when: false
+
+- name: Verify namespace health-api exists
+  shell: k3s kubectl get namespace health-api -o name
+  register: ns_check
+  changed_when: false
+  failed_when: ns_check.rc != 0 or 'namespace/health-api' not in ns_check.stdout

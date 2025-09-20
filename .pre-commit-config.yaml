@@ -1,0 +1,91 @@
+default_language_version:
+  python: python3
+
+repos:
+  # Basic checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+      - id: detect-private-key
+
+  # Python
+  - repo: https://github.com/psf/black
+    rev: 24.3.0
+    hooks:
+      - id: black
+  - repo: https://github.com/pre-commit/mirrors-isort
+    rev: v5.12.0
+    hooks:
+      - id: isort
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+
+  # JS/Frontend
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        additional_dependencies: [prettier@3.1.0]
+
+  # Shell
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.6
+    hooks:
+      - id: shellcheck
+
+  # YAML
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: ["-c", "security_local/config/.yamllint.yml"]
+
+  # Dotenv
+  - repo: https://github.com/dotenv-linter/dotenv-linter
+    rev: v3.3.0
+    hooks:
+      - id: dotenv-linter
+
+  # Helm / Kubernetes
+  - repo: https://github.com/helm/chart-testing
+    rev: v3.10.1
+    hooks:
+      - id: helm-lint
+  - repo: https://github.com/roboll/helmfile
+    rev: v0.156.0
+    hooks:
+      - id: helmfile-lint
+        entry: helmfile lint
+        language: system
+  - repo: https://github.com/yannh/kubeconform
+    rev: v0.6.7
+    hooks:
+      - id: kubeconform
+        entry: kubeconform
+        args: ["-strict"]
+
+  # Ansible
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v24.9.2
+    hooks:
+      - id: ansible-lint
+
+  # DevSecOps
+  - repo: https://github.com/zricethezav/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+        args: ["--config=security_local/config/gitleaks/.gitleaks.toml"]
+
+  - repo: https://github.com/returntocorp/semgrep
+    rev: v1.92.0
+    hooks:
+      - id: semgrep
+        args: ["--config=security_local/config/semgrep"]

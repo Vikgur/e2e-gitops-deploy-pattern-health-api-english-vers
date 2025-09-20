@@ -1,0 +1,21 @@
+# .yamllint.yml
+extends: default
+
+rules:
+  line-length:
+    max: 120        # allowed line length
+    level: warning  # warning, not error
+  document-start:
+    present: false  # don't require `---` at start
+  trailing-spaces:
+    level: error    # spaces at end of line are errors
+  new-line-at-end-of-file:
+    level: warning  # soft recommendation
+  truthy:
+    allowed-values: ['true', 'false', 'on', 'off', 'yes', 'no']
+  indentation:
+    indent-sequences: consistent
+  braces: disable   # disable rule about curly braces
+
+ignore: |
+  ansible/group_vars/vault/*

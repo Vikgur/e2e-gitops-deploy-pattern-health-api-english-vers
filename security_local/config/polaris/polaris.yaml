@@ -1,0 +1,41 @@
+checks:
+  # Workload Security
+  hostPID: "error"
+  hostIPC: "error"
+  hostNetwork: "warning"
+  privileged: "error"
+  notReadOnlyRootFileSystem: "error"
+  runAsRootAllowed: "error"
+  capabilities: "error"
+
+  # Resource Requests & Limits
+  missingResources: "error"
+  cpuRequestsMissing: "error"
+  cpuLimitsMissing: "error"
+  memoryRequestsMissing: "error"
+  memoryLimitsMissing: "error"
+
+  # Image Policies
+  tagNotSpecified: "error"
+  notLatestTag: "warning"
+  imagePullPolicyNotAlways: "warning"
+
+  # Probes
+  livenessProbeMissing: "warning"
+  readinessProbeMissing: "warning"
+
+  # Networking
+  hostPortSet: "warning"
+
+  # Misc
+  multipleReplicasForDeployment: "warning"
+  pdbDisruptions: "warning"
+
+config:
+  categories:
+    - Security
+    - Reliability
+    - Efficiency
+
+  exemptions: []
+  namespaceExemptions: []

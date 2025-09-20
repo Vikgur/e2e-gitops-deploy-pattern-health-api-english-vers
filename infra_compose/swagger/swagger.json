@@ -1,0 +1,61 @@
+{
+  "definitions": {},
+  "info": {
+    "description": "Swagger-документация для микросервиса health-api",
+    "title": "health-api",
+    "version": "1.0.1"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "\u0421\u0442\u0430\u0442\u0443\u0441 \u0441\u0435\u0440\u0432\u0438\u0441\u0430"
+          }
+        },
+        "summary": "\u0421\u0442\u0430\u0442\u0443\u0441 API"
+      }
+    },
+    "/db-test": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "\u0421\u043f\u0438\u0441\u043e\u043a \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0445 \u0437\u0430\u043f\u0438\u0441\u0435\u0439"
+          },
+          "500": {
+            "description": "\u041e\u0448\u0438\u0431\u043a\u0430 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f"
+          }
+        },
+        "summary": "\u041f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f \u043a \u0431\u0430\u0437\u0435 \u0434\u0430\u043d\u043d\u044b\u0445"
+      }
+    },
+    "/health": {
+      "get": {
+        "responses": { "200": { "description": "OK" } },
+        "summary": "\u041f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 \u0437\u0434\u043e\u0440\u043e\u0432\u044c\u044f"
+      }
+    },
+    "/send-kafka": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "\u0423\u0441\u043f\u0435\u0448\u043d\u0430\u044f \u043e\u0442\u043f\u0440\u0430\u0432\u043a\u0430"
+          },
+          "500": {
+            "description": "\u041e\u0448\u0438\u0431\u043a\u0430 \u043e\u0442\u043f\u0440\u0430\u0432\u043a\u0438"
+          }
+        },
+        "summary": "\u041e\u0442\u043f\u0440\u0430\u0432\u043a\u0430 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f \u0432 Kafka"
+      }
+    },
+    "/version": {
+      "get": {
+        "responses": {
+          "200": { "description": "\u0412\u0435\u0440\u0441\u0438\u044f" }
+        },
+        "summary": "\u0412\u0435\u0440\u0441\u0438\u044f \u0441\u0435\u0440\u0432\u0438\u0441\u0430"
+      }
+    }
+  },
+  "swagger": "2.0"
+}

@@ -1,0 +1,7 @@
+framework: terraform
+quiet: true
+soft-fail: false
+skip-path:
+  - ".terraform"
+skip-check:
+  - CKV_YC_11   # Security group must be assigned to NIC — skipped for the current scheme

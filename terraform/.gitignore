@@ -1,0 +1,18 @@
+# Terraform
+terraform/**/.terraform/
+terraform/**/terraform.tfstate
+terraform/**/terraform.tfstate.*
+terraform/**/terraform.tfstate.backup
+terraform/**/crash.log
+terraform/**/terraform.tfvars
+
+# Local env files
+.env
+
+# Editor/IDE system files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store

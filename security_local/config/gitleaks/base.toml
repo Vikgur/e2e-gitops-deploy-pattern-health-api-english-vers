@@ -1,0 +1,21 @@
+title = "gitleaks baseline for health-api monorepo"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "ignore encrypted vault files, binaries, images, and templates"
+files = [
+  '''ansible/group_vars/vault/.*''',
+  '''ansible/roles/.*/files/.*\.(tar|tgz|gz)$''',
+  '''\.venv/.*''',
+  '''__pycache__/.*'''
+]
+regexes = [
+  '''(?i)example|dummy|sample|changeme'''
+]
+
+[[rules]]
+description = "Ignore Helm templates with {{ }}"
+regex = '''\{\{.*\}\}'''
+tags = ["template"]
