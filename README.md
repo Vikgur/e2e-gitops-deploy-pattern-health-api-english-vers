@@ -49,23 +49,28 @@
 
 # About the Project  
 
-This repository is a **portfolio monorepo**, a demonstration of an **end-to-end DevOps/DevSecOps/GitOps architecture** for the web application [`health-api`](https://github.com/vikgur/health-api-for-microservice-stack-english-vers).  
+This repository is a **monorepo portfolio**, a demonstration of an **end-to-end DevOps/DevSecOps/GitOps architecture** for the web application [`health-api`](https://github.com/vikgur/health-api-for-microservice-stack-english-vers).
 
-- **Author’s production-grade microservices setup**.  
-- Fully automated functional project, deployable end-to-end.  
-- The repository serves as a **final showcase**: all key components are collected in one place, folders contain copies of the original repositories with their README files.  
-- In real production, a split [GitOps repositories](#all-related-repositories) structure under Argo CD is used; here it is adapted into a single monorepo format for demonstration.  
-- Implements the **automated GitOps deployment pattern**: the full process from IaC and CI/CD to production rollout.  
-- Implemented [**blue-green + canary**](#release-scenario-stage--prod) strategy for safe progressive rollout and fast rollback in production.  
+**Completed Task:**  
 
-The repository also includes local debugging scenarios:  
-- [**Extended version**](#infra_compose-extended-version-in-docker-compose) of the project in `docker-compose` (18 containers), including backend, frontend, Kafka/Zookeeper brokers, PostgreSQL + PgBouncer, observability stack (Prometheus, VictoriaMetrics, Grafana, Jaeger, Alertmanager) and exporters, all started with a single [Makefile](#makefile) command;  
-- [**MVP version**](#mvp-version-in-minikube) in `Minikube`.  
+- **Cloud delivery pipeline:**  
+  - A secure supply chain with DevSecOps practices has been deployed.  
+  - A separate stage environment has been set up, fully isolated yet identical to prod (on dedicated VMs within the same cloud account).  
 
-**Key goal achieved:**  
+- **Local debugging:**  
+  - [**Extended version**](#infra_compose-extended-version-in-docker-compose) in `docker-compose` (18 containers: backend, frontend, Kafka/Zookeeper, PostgreSQL + PgBouncer, observability, exporters) launched with a single command via [Makefile](#makefile).  
+  - [**MVP version**](#mvp-version-in-minikube) in `Minikube`.  
 
-The entire process — from cloud provisioning to dev/stage/prod deployments, debugging, and live application management — is **reduced to executing a series of short commands within the GitOps flow**.  
+The entire path — from cloud provisioning to dev/stage/prod deployment, debugging, and application management — has been **reduced to a series of short commands within the GitOps flow**.  
 
+**Monorepo Portfolio:**  
+
+- **Author’s lab** of production-grade microservice architecture.  
+- Fully functional and deployable end-to-end.  
+- All key components are gathered in one place, with folders containing copies of the original repositories and their README files.  
+- In real production, a separate structure of [GitOps repositories](#all-related-repositories) managed by Argo CD is used; here it is adapted into a single monorepo format.  
+- A **GitOps deployment pattern** is established: from IaC and CI/CD to production rollout.  
+- Implemented [**blue-green + canary**]( #rollout-strategies) strategy for safe progressive rollouts and fast rollback. 
 ---
 
 ## Stack  
