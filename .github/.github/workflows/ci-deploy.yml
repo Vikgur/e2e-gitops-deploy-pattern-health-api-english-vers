@@ -833,7 +833,7 @@ jobs:
           name: e2e-test-allure-results
           path: e2e_tests/test-results/allure/
   
-  # === ПОДПИСЬ STAGE ОБРАЗОВ ===
+  # === SIGN STAGE IMAGES ===
   sign-images:
     name: Cosign Sign Images
     needs: deploy-stage-e2e-tests
