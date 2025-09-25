@@ -62,7 +62,7 @@ This repository is a **monorepo portfolio**, a demonstration of an **end-to-end 
 
 The entire path — from cloud provisioning to dev/stage/prod deployment, debugging, and application management — has been **reduced to a series of short commands within the GitOps flow**.  
 
-Embedding **advanced end-to-end DevSecOps practices**, covering full project security "turn-key", is moved into a separate repository [devsecops-gitops-health-api](#https://github.com/Vikgur/devsecops-gitops-health-api-english-vers).  
+Embedding **advanced end-to-end DevSecOps practices**, covering full project security "turn-key", is moved into a separate repository [devsecops-gitops-health-api](https://github.com/Vikgur/devsecops-gitops-health-api-english-vers).  
 This repository contains only the baseline configurations.
 
 ## Monorepo 
